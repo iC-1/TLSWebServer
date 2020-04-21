@@ -8,6 +8,8 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
+	//"github.com/dimfeld/httptreemux"
+	//"strings"
 )
 
 /* // obsolete variables with configuratino details, now delivered via config file
@@ -57,6 +59,7 @@ func init() {
 }
 
 func main() {
+
 	flag.Parse()
 	if showVersion {
 		fmt.Printf("Version: %s, based on branch: %s (commit: %s), Buildtime: %s\n", Version, Branch, Commit, Buildtime)
@@ -77,26 +80,32 @@ func main() {
 	if cfg.TLSKeyPath == "" {
 		log.Fatal("no key file given but required")
 	}
+	if cfg.httpsport == "" {
+		log.Fatal("no HTTPS given but required")
+	}
+	if cfg.httpport == "" {
+		log.Fatal("no HTTP given but required")
+	}
+	if cfg.domain == "" {
+		log.Fatal("no Domain given but required")
+	}
 
 	app := &App{
-		Addr:      cfg.HttpsAddr,
-		StaticDir: cfg.StaticDir,
-		TLSCert:   cfg.TLSCertPath,
-		TLSKey:    cfg.TLSKeyPath,
+		domain: 	cfg.domain,
+		httpport: 	cfg.httpport,
+		httpsport: 	cfg.httpsport,
+		StaticDir: 	cfg.StaticDir,
+		TLSCert:   	cfg.TLSCertPath,
+		TLSKey:    	cfg.TLSKeyPath,
 	}
 
-	// start a http server on httpAddr that just redirects to https
-	if cfg.HttpAddr != "" {
-		log.Printf("Starting a HTTP redirector\n")
-		go func() {
-			httpMux := http.NewServeMux()
-			httpMux.HandleFunc("/", app.TLSRedirect)
-			log.Println("Starting http server on ", cfg.HttpAddr)
-			err := http.ListenAndServe(cfg.HttpAddr, httpMux)
-			log.Fatal(err)
-		}()
+go func() {
+	log.Printf("Listening for HTTPS connections at: https://%v:%v", cfg.domain, cfg.httpsport)
+		app.RunTLSServer()
+	}()
+	log.Printf("Starting Prime Frontend Server")
+	log.Printf("Listening for HTTP connections at: http://%v:%v", cfg.domain, cfg.httpport)
+	if err := http.ListenAndServe(cfg.domain+":"+cfg.httpport, http.HandlerFunc(app.redirectHandler)); err != nil {
+  		log.Fatalf("ListenAndServe error: %v", err)
 	}
-
-	// start a https server on httpsAddr
-	app.RunTLSServer()
 }

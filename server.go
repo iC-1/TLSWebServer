@@ -33,7 +33,7 @@ func (app *App) RunTLSServer() {
 
 	// Add Idle, Read and Write timeouts to the server.
 	srv := &http.Server{
-		Addr:         app.Addr,
+		Addr:         app.domain+":"+app.httpsport,
 		Handler:      app.Routes(),
 		TLSConfig:    tlsConfig,
 		IdleTimeout:  time.Minute,
@@ -47,7 +47,7 @@ func (app *App) RunTLSServer() {
 	}
 	srv.TLSConfig.GetCertificate = kpr.GetCertificateFunc()
 	// start the server
-	log.Printf("Starting server on %s", app.Addr)
+	//log.Printf("Starting server on %s", app.httpsport)
 	err = srv.ListenAndServeTLS("", "")
 	log.Fatal(err)
 }

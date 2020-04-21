@@ -1,8 +1,9 @@
-module github.com/scusi/TLSWebServer
+module github.com/iC-1/TLSWebServer
 
 go 1.13
 
 require (
+	github.com/dimfeld/httptreemux v5.0.1+incompatible
 	github.com/howeyc/fsnotify v0.9.0 // indirect
 	github.com/kr/pretty v0.2.0 // indirect
 	github.com/mitchellh/go-ps v1.0.0

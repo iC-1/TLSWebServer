@@ -1,7 +1,8 @@
 SHELL:=/bin/bash
+GOBIN:=$(GOROOT)/bin
 
-COMMIT := $(shell git rev-parse --short HEAD)
-VERSION := $(shell git tag --points-at HEAD)
+COMMIT := $(shell git rev-parse --short dev)
+VERSION := $(shell git tag --points-at dev)
 BUILDTIME := $(shell date -u '+%Y-%m-%dT%H:%M:%SZ')
 BRANCH := $(shell git branch | grep \* | cut -d ' ' -f2)
 
@@ -23,5 +24,5 @@ run: build
 	./TLSWebServer
 
 build:
-	go build $(GOFLAGS) .
+	$(GOBIN)/go build $(GOFLAGS) .
 

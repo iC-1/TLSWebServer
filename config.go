@@ -7,11 +7,12 @@ import (
 
 // Config holds the configuration settings
 type Config struct {
-	HttpAddr    string // listening address of the http -> https redirector
-	HttpsAddr   string // listening address of the tls web server
+	httpport    string // listening address of the http -> https redirector
+	httpsport   string // listening address of the tls web server
 	TLSCertPath string // path to certificate file, PEM encoded
 	TLSKeyPath  string // path to key file, PEM encoded, without passphrase
 	StaticDir   string // path to webroot directory
+	domain		string // Localhost or IP address
 }
 
 // NewConfig - load a config file from a given path,
@@ -26,7 +27,7 @@ func NewConfig(path string) (cfg *Config) {
 				log.Printf("Could not read config file from '%s'\n", cfl)
 				continue
 			}
-			log.Println("Found config file at '" + cfl + "' useing it.")
+			log.Println("Found config file at '" + cfl + "' using it.")
 			break
 		}
 	} else {
@@ -36,16 +37,16 @@ func NewConfig(path string) (cfg *Config) {
 			log.Fatal(err)
 		}
 	}
-	cfg.HttpAddr, err = config.GetString("HttpAddr")
+	cfg.httpport, err = config.GetString("HttpPort")
 	if err != nil {
 		log.Println("Config Error: " + err.Error())
-		cfg.HttpAddr = ":8080" // set default value 'HttpAddr=":8080"'
+		cfg.httpport = ":8080" // set default value 'HttpAddr=":8080"'
 	}
 
-	cfg.HttpsAddr, err = config.GetString("HttpsAddr")
+	cfg.httpsport, err = config.GetString("HttpsPort")
 	if err != nil {
 		log.Println("Config Error: " + err.Error())
-		cfg.HttpsAddr = ":8443" // set default value 'HttpsAddr=":8443"'
+		cfg.httpsport = ":8443" // set default value 'HttpsAddr=":8443"'
 	}
 
 	cfg.TLSCertPath, err = config.GetString("TLSCertPath")
@@ -65,5 +66,12 @@ func NewConfig(path string) (cfg *Config) {
 		log.Println("Config Error: " + err.Error())
 		cfg.StaticDir = "www" // set default path to webroot
 	}
+
+	cfg.domain, err = config.GetString("Domain")
+	if err != nil {
+		log.Println("Config Error: " + err.Error())
+		cfg.domain = "localhost" // set default path to localhost
+	}
+
 	return cfg
 }

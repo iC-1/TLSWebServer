@@ -3,3 +3,4 @@ www
 dist
 TLSWebServer
 *.bak
+*.code-workspace
