@@ -6,8 +6,8 @@ pipeline {
     tools { go 'Golang Plugin' }
 
     environment {
-        GOROOT=
-        GOPATH=
+        GOROOT = ''
+        GOPATH = ''
     }
 
     stages {
