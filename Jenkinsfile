@@ -6,11 +6,6 @@ pipeline {
 
   tools { go 'Golang Plugin' }
 
-  environment {
-    GOROOT = ''
-    GOPATH = ''
-  }
-
   stages {
     stage('Build') {
       steps {
