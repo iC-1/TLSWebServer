@@ -1,10 +1,8 @@
 pipeline {
 
-  agent { node 'JenkinsAutoscaledBuildNode' }
-
-  options { ansiColor('xterm') }
-
+  agent any
   tools { go 'Golang Plugin' }
+  options { ansiColor('xterm') }
 
   stages {
     stage('Build') {
