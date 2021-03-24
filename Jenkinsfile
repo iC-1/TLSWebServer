@@ -3,7 +3,7 @@ pipeline {
 
     options { ansiColor('xterm') }
 
-    tools { go 'Go 1.14.2' }
+    tools { go 'Golang Plugin' }
 
     stages {
         stage('Check GO Environment') {
