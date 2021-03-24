@@ -3,6 +3,8 @@ pipeline {
 
     options { ansiColor('xterm') }
 
+    tools { go }
+
     stages {
         stage('Check GO Environment') {
             steps {
