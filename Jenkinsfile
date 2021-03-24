@@ -33,7 +33,6 @@ pipeline {
           tar -zcvf dist/TLSWebServer.tar.gz TLSWebServer
           aws s3 cp dist/TLSWebServer.tar.gz s3://optimus-deploy/webserver/JenkinsBuilds/${branchName.toUpperCase()}/
         """
-        }
       }
     }
   }
