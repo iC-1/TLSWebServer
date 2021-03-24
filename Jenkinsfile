@@ -1,45 +1,45 @@
 pipeline {
-    agent { node 'JenkinsAutoscaledBuildNode' }
 
-    options { ansiColor('xterm') }
+  agent { node 'JenkinsAutoscaledBuildNode' }
 
-    tools { go 'Golang Plugin' }
+  options { ansiColor('xterm') }
 
-    environment {
-        GOROOT = ''
-        GOPATH = ''
+  tools { go 'Golang Plugin' }
+
+  environment {
+    GOROOT = ''
+    GOPATH = ''
+  }
+
+  stages {
+    stage('Build') {
+      steps {
+        sh 'make build'
+      }
     }
 
-    stages {
-        stage('Check GO Environment') {
-            steps {
-                sh 'echo $GOROOT'
-                sh 'echo $GOPATH'
-            }
+    stage('Deploy') {
+      when {
+        beforeAgent true;
+        expression {
+          return ['dev', 'test', 'master'].contains(BRANCH_NAME);
         }
-        stage('Build') {
-            steps {
-                sh 'make build'
-            }
+      }
+
+      steps {
+        script {
+          def branchName = BRANCH_NAME
+          if (branchName == 'master') {
+            branchName = 'prod'
+          }
         }
-        stage('Deploy') {
-            when {
-                beforeAgent true;
-                expression {
-                    return ['dev', 'test', 'master'].contains(BRANCH_NAME);
-                }
-            }
-            steps {
-                sh 'mkdir -p dist'
-                sh 'tar -zcvf dist/TLSWebServer.tar.gz TLSWebServer'
-                script {
-                    def branchName = BRANCH_NAME
-                    if (branchName == 'master') {
-                        branchName = 'prod'
-                    }
-                    sh "aws s3 cp dist/TLSWebServer.tar.gz s3://optimus-deploy/webserver/JenkinsBuilds/${branchName.toUpperCase()}/"
-                }
-            }
+        sh """
+          mkdir -p dist
+          tar -zcvf dist/TLSWebServer.tar.gz TLSWebServer
+          aws s3 cp dist/TLSWebServer.tar.gz s3://optimus-deploy/webserver/JenkinsBuilds/${branchName.toUpperCase()}/
+        """
         }
+      }
     }
+  }
 }
