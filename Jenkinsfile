@@ -1,5 +1,8 @@
 pipeline {
-    agent any
+    agent { node 'JenkinsAutoscaledBuildNode' }
+
+    options { ansiColor('xterm') }
+
     stages {
         stage('Check GO Environment') {
             steps {
